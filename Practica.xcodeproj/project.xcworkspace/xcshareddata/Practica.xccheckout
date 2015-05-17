@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>4C19C282-1C90-49E1-9C1A-E97416549C23</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Practica</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0952590E93CB6EA7EEF0A290B84815928EF5FBF4</key>
+		<string>https://github.com/sorodrigo/App-Ubicua.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Practica.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0952590E93CB6EA7EEF0A290B84815928EF5FBF4</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/sorodrigo/App-Ubicua.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0952590E93CB6EA7EEF0A290B84815928EF5FBF4</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0952590E93CB6EA7EEF0A290B84815928EF5FBF4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Practica</string>
+		</dict>
+	</array>
+</dict>
+</plist>
