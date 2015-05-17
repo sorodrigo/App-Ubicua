@@ -1,17 +1,15 @@
 //
-//  customCellController.swift
+//  customTableCell.swift
 //  Practica
 //
-//  Created by Rodrigo Solís Morales on 17/04/15.
+//  Created by Rodrigo Solís Morales on 07/05/15.
 //  Copyright (c) 2015 Rodrigo Solís Morales. All rights reserved.
 //
 
 import UIKit
 
-class customCellController: UITableViewCell {
+class customTableCell: UITableViewCell {
 
-    @IBOutlet weak var imageCell: UIImageView!
-    @IBOutlet weak var textCell: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
