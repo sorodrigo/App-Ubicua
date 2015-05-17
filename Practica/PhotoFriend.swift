@@ -7,3 +7,16 @@
 //
 
 import Foundation
+import UIKit
+
+class PhotoFriend {
+    var name: String = ""
+    var photos = [UIImage]()
+    
+    init(name: String)
+    {
+        self.name = name;
+    }
+    
+    
+}

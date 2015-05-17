@@ -6,8 +6,9 @@
 //  Copyright (c) 2015 Rodrigo Solís Morales. All rights reserved.
 //
 
-import Cocoa
+import UIKit
 
 class CollectionHeader: UICollectionReusableView {
 
+    @IBOutlet weak var headerName: UILabel!
 }

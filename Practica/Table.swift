@@ -14,7 +14,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
 {
     
     var tableArray = NSMutableArray()
-    
+    var photo:UIImage?
     var rowSet = NSMutableSet()
     let cellIdentifier = "cell"
     
@@ -25,14 +25,14 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
     
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         self.getContacts()
+        super.viewDidLoad()
         self.navigationController?.setToolbarHidden(true, animated: false)
         
-        var nib = UINib(nibName: "customCell", bundle: nil)
-        tableView.registerNib(nib, forCellReuseIdentifier: cellIdentifier)
         tableView.delegate = self
         tableView.dataSource = self
+        
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -57,12 +57,9 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        var cell:customCellController = self.tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! customCellController
+        var cell:customTableCell = self.tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! customTableCell
         
-        // Configure the cell..
-        
-        let row = indexPath.row
-        cell.textCell.text = tableArray[row] as! String
+        cell.textCell.text = (tableArray[indexPath.row] as! String)
         cell.imageCell.image = UIImage(named:"bluecircle")
         
         return cell
@@ -73,8 +70,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        var selectedCell:customCellController = tableView.cellForRowAtIndexPath(indexPath) as! customCellController
-        //selectedCell.contentView.backgroundColor = UIColor.whiteColor()
+        var selectedCell:customTableCell = tableView.cellForRowAtIndexPath(indexPath) as! customTableCell
         selectedCell.imageCell.image = UIImage(named:"greencircle")
         
         var enviar:String
@@ -83,22 +79,15 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         self.rowSet.addObject(nombre)
         
         self.navigationController?.setToolbarHidden(false, animated: true)
-        enviar = "Send ("
-        enviar += self.rowSet.count.description
-        enviar += ")"
+        
+        enviar = "Send (\(self.rowSet.count.description))"
+
         self.sendBarButton.title = enviar
         
-        
-        println(self.rowSet.description)
-    }
-    
-    // if tableView is set in attribute inspector with selection to multiple Selection it should work.
-    
-    // Just set it back in deselect
+        }
     
     override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        var selectedCell:customCellController = tableView.cellForRowAtIndexPath(indexPath) as! customCellController
-        selectedCell.contentView.backgroundColor = UIColor.whiteColor()
+        var selectedCell:customTableCell = tableView.cellForRowAtIndexPath(indexPath) as! customTableCell
         selectedCell.imageCell.image = UIImage(named:"bluecircle")
         
         var enviar:String
@@ -111,20 +100,16 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
             self.navigationController?.setToolbarHidden(true, animated: true)
         }
         
-        enviar = "Send ("
-        enviar += self.rowSet.count.description
-        enviar += ")"
+        enviar = "Send (\(self.rowSet.count.description))"
         self.sendBarButton.title = enviar
-        
-        println(self.rowSet.description)
-    }
+        }
     
     func urlRequestWithComponents(urlString:String, parameters:Dictionary<String, String>, imageData:NSData) -> (URLRequestConvertible, NSData) {
         
         // create url request to send
         var mutableURLRequest = NSMutableURLRequest(URL: NSURL(string: urlString)!)
         mutableURLRequest.HTTPMethod = Method.POST.rawValue
-        let boundaryConstant = "myRandomBoundary12345";
+        let boundaryConstant = "---boundary--\(arc4random())---";
         let contentType = "multipart/form-data;boundary="+boundaryConstant
         mutableURLRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
         
@@ -135,7 +120,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         
         // add image
         uploadData.appendData("\r\n--\(boundaryConstant)\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-        uploadData.appendData("Content-Disposition: form-data; name=\"file\"; filename=\"file.png\"\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+        uploadData.appendData("Content-Disposition: form-data; filename=\"filename1.png\"\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
         uploadData.appendData("Content-Type: image/png\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
         uploadData.appendData(imageData)
         
@@ -159,8 +144,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
             "usuario" : "Gonzalo"
         ]
         
-        let image = UIImage(named: "babybaboon.png")
-        let imgData = UIImagePNGRepresentation(image)
+        let imgData = UIImagePNGRepresentation(self.photo)
         
         let urlRequest = urlRequestWithComponents("http://localhost:8080/upload", parameters: param, imageData: imgData)
         
@@ -170,7 +154,8 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
             }
             .responseJSON { (request, response, JSON, error) in
                 println("REQUEST \(request)")
-               var r = response!.statusCode.description.toInt()
+               if var r = response?.statusCode.description.toInt()
+               {
                 println("RESPONSE \(r)")
                 println("JSON \(JSON)")
                 println("ERROR \(error)")
@@ -179,18 +164,20 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
                 
                     self.presentingViewController?.presentingViewController!.dismissViewControllerAnimated(true, completion: nil)
                 }
+               }
+                
+                else
+                {
+                    var alert = UIAlertController(title: "Oops!", message: "Failed to connect to the server.", preferredStyle: UIAlertControllerStyle.Alert)
+                    alert.addAction(UIAlertAction(title: "Dammit", style: UIAlertActionStyle.Default, handler: nil))
+                    self.presentViewController(alert,animated: true, completion: nil)
+                }
         }
     }
     
     func getContacts () {
         
         var contacts = NSArray()
-        
-        let status = ABAddressBookGetAuthorizationStatus()
-        if status == .Denied || status == .Restricted {
-            // user previously denied, to tell them to fix that in settings
-            println("not granted before")
-        }
         
         var error: Unmanaged<CFErrorRef>? = nil
         
@@ -204,15 +191,15 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         ABAddressBookRequestAccessWithCompletion(addressBook) {
             (granted, error) in
             if !granted {
-                // warn the user that because they just denied permission, this functionality won't work
-                // also let them know that they have to fix this in settings
-                println("not granted")
+                
+                var alert = UIAlertController(title: "Sorry", message: "Contacts permission was not granted. Change it on phone settings.", preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+                //TODO: Handler que haga reload en la tableview
+                self.presentViewController(alert,animated: true, completion: nil)
             }
             
             if let people = ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue() as? NSArray {
-                // now do something with the array of people
-                println("asignando contacts")
-                //self.tableArray = ["Pedro", "Pablo", "Luis", "Juan", "John", "Mike", "Hendricks", "Gordons", "Larios", "Grey", "Goose", "Walker"]
+                
             
                 var i = 0;
                 for person:ABRecordRef in people {
@@ -220,15 +207,16 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
                     var contactFirstName = ABRecordCopyValue(person, kABPersonFirstNameProperty).takeRetainedValue() as? NSString
                     var contactLastName = ABRecordCopyValue(person, kABPersonLastNameProperty).takeRetainedValue() as? NSString
                     
-                    var fullName:String = contactFirstName! as String
-                    fullName += " "
-                    fullName += contactLastName! as String
-                     self.tableArray.insertObject(fullName, atIndex: i)
+                    var fullName:String = "\(contactFirstName!) \(contactLastName!)"
+                    self.tableArray.insertObject(fullName, atIndex: i)
                 }
                 
             }
         }
+        
+        
     }
+        
 }
 
 /*
