@@ -9,7 +9,7 @@
 import UIKit
 
 class Photo: UIViewController {
-
+    
     var photo:UIImage?
     @IBOutlet weak var photoView: UIImageView!
     @IBOutlet weak var cancel: UIButton!
@@ -19,12 +19,11 @@ class Photo: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.photo = UIImage(named: "prueba\(arc4random_uniform(4)+1)")!
         self.photoView.image = photo
         self.activityIndicator.hidden = true
         // Do any additional setup after loading the view.
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -41,7 +40,7 @@ class Photo: UIViewController {
         
         UIImageWriteToSavedPhotosAlbum(photo, self,"image:didFinishSavingWithError:contextInfo:", nil)
         
-
+        
         
     }
     
@@ -54,15 +53,15 @@ class Photo: UIViewController {
             tableVC.photo = photo
         }
     }
-
+    
     /*
     // MARK: - Navigation
-
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // Get the new view controller using segue.destinationViewController.
+    // Pass the selected object to the new view controller.
     }
     */
-
+    
 }

@@ -9,13 +9,27 @@
 import Foundation
 import UIKit
 
-class PhotoFriend {
-    var name: String = ""
+class PhotoFriend: NSObject, NSCoding {
+    var owner: String = ""
+    var uniqueurl = [String]()
     var photos = [UIImage]()
     
-    init(name: String)
+    init(owner: String)
     {
-        self.name = name;
+        self.owner = owner;
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        self.owner = aDecoder.decodeObjectForKey("owner") as! String
+        self.uniqueurl = aDecoder.decodeObjectForKey("uniqueurl") as! [String]
+        self.photos = aDecoder.decodeObjectForKey("photos") as! [UIImage]
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(owner, forKey: "owner")
+        aCoder.encodeObject(uniqueurl, forKey: "uniqueurl")
+        aCoder.encodeObject(photos, forKey: "photos")
+
     }
     
     

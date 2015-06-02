@@ -7,17 +7,17 @@
 //
 
 import UIKit
-import AddressBook
-import AddressBookUI
+
 
 class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
 {
     
-    var tableArray = NSMutableArray()
+    var tableArray = [String]()
     var photo:UIImage?
-    var rowSet = NSMutableSet()
+    var friendSet = NSMutableSet()
+    var friends = [String]()
     let cellIdentifier = "cell"
-    
+    let apiHelper = APIHelper()
     
     @IBOutlet weak var flex1: UIBarButtonItem!
     @IBOutlet weak var flex2: UIBarButtonItem!
@@ -25,10 +25,12 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
     
     
     override func viewDidLoad() {
-        self.getContacts()
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        
         super.viewDidLoad()
         self.navigationController?.setToolbarHidden(true, animated: false)
-        
+        self.tableArray = defaults.objectForKey("contacts") as! [String]
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -59,7 +61,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         
         var cell:customTableCell = self.tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! customTableCell
         
-        cell.textCell.text = (tableArray[indexPath.row] as! String)
+        cell.textCell.text = (tableArray[indexPath.row] as String)
         cell.imageCell.image = UIImage(named:"bluecircle")
         
         return cell
@@ -75,16 +77,16 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         
         var enviar:String
         let row = indexPath.row
-        var nombre:String = tableArray[row] as! String
-        self.rowSet.addObject(nombre)
+        var nombre:String = tableArray[row] as String
+        self.friendSet.addObject(nombre)
         
         self.navigationController?.setToolbarHidden(false, animated: true)
         
-        enviar = "Send (\(self.rowSet.count.description))"
-
+        enviar = "Send (\(self.friendSet.count.description))"
+        
         self.sendBarButton.title = enviar
         
-        }
+    }
     
     override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         var selectedCell:customTableCell = tableView.cellForRowAtIndexPath(indexPath) as! customTableCell
@@ -92,131 +94,61 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         
         var enviar:String
         let row = indexPath.row
-        var nombre:String = tableArray[row] as! String
-        self.rowSet.removeObject(nombre)
+        var nombre:String = tableArray[row] as String
+        self.friendSet.removeObject(nombre)
         
-        if self.rowSet.count == 0
+        if self.friendSet.count == 0
         {
             self.navigationController?.setToolbarHidden(true, animated: true)
         }
         
-        enviar = "Send (\(self.rowSet.count.description))"
+        enviar = "Send (\(self.friendSet.count.description))"
         self.sendBarButton.title = enviar
-        }
-    
-    func urlRequestWithComponents(urlString:String, parameters:Dictionary<String, String>, imageData:NSData) -> (URLRequestConvertible, NSData) {
-        
-        // create url request to send
-        var mutableURLRequest = NSMutableURLRequest(URL: NSURL(string: urlString)!)
-        mutableURLRequest.HTTPMethod = Method.POST.rawValue
-        let boundaryConstant = "---boundary--\(arc4random())---";
-        let contentType = "multipart/form-data;boundary="+boundaryConstant
-        mutableURLRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
-        
-        
-        
-        // create upload data to send
-        let uploadData = NSMutableData()
-        
-        // add image
-        uploadData.appendData("\r\n--\(boundaryConstant)\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-        uploadData.appendData("Content-Disposition: form-data; filename=\"filename1.png\"\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-        uploadData.appendData("Content-Type: image/png\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-        uploadData.appendData(imageData)
-        
-        // add parameters
-        for (key, value) in parameters {
-            uploadData.appendData("\r\n--\(boundaryConstant)\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-            uploadData.appendData("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n\(value)".dataUsingEncoding(NSUTF8StringEncoding)!)
-        }
-        uploadData.appendData("\r\n--\(boundaryConstant)--\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-        
-        
-        
-        // return URLRequestConvertible and NSData
-        return (ParameterEncoding.URL.encode(mutableURLRequest, parameters: nil).0, uploadData)
     }
     
     @IBAction func send(sender: AnyObject) {
         
-        var param = [
-            "title" : "mono",
-            "usuario" : "Gonzalo"
-        ]
+        //self.activityIndicator.hidden = false
+        //self.activityIndicator.startanimating()
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let username:String = defaults.objectForKey("username") as! String
+        self.friends = self.friendSet.allObjects as! [String]
         
-        let imgData = UIImagePNGRepresentation(self.photo)
-        
-        let urlRequest = urlRequestWithComponents("http://localhost:8080/upload", parameters: param, imageData: imgData)
-        
-        upload(urlRequest.0, urlRequest.1)
-            .progress { (bytesWritten, totalBytesWritten, totalBytesExpectedToWrite) in
-               
+        // Create Multipart Upload request
+        var imgData : NSData = UIImagePNGRepresentation(photo)
+        let httpRequest = apiHelper.uploadRequest("photos/upload", data: imgData, owner: "\(username)", friends: self.friends)
+        apiHelper.sendRequest(httpRequest, completion: {(data:NSData!, error:NSError!) in
+            // Display error
+            if error != nil {
+                let errorMessage = self.apiHelper.getErrorMessage(error)
+                self.displayAlertMessage("Error", alertDescription: errorMessage as String)
+                
+                return
             }
-            .responseJSON { (request, response, JSON, error) in
-                println("REQUEST \(request)")
-               if var r = response?.statusCode.description.toInt()
-               {
-                println("RESPONSE \(r)")
-                println("JSON \(JSON)")
-                println("ERROR \(error)")
-                
-                if r == 200 {
-                
-                    self.presentingViewController?.presentingViewController!.dismissViewControllerAnimated(true, completion: nil)
-                }
-               }
-                
-                else
-                {
-                    var alert = UIAlertController(title: "Oops!", message: "Failed to connect to the server.", preferredStyle: UIAlertControllerStyle.Alert)
-                    alert.addAction(UIAlertAction(title: "Dammit", style: UIAlertActionStyle.Default, handler: nil))
-                    self.presentViewController(alert,animated: true, completion: nil)
-                }
-        }
+            
+            var jsonerror:NSError?
+            let response = NSJSONSerialization.JSONObjectWithData(data,
+                options: NSJSONReadingOptions.AllowFragments, error:&jsonerror) as! NSDictionary
+            
+            if response.valueForKey("success") as! Bool == true
+            {
+                //self.activityIndicatorView.hidden = true
+                self.presentingViewController?.presentingViewController!.dismissViewControllerAnimated(true, completion: nil)
+            }
+        })
+        
+        
+    }
+    
+    func displayAlertMessage(header:String, alertDescription:String)
+    {
+        let alertVC = UIAlertController(title: header, message: alertDescription, preferredStyle: .Alert)
+        let okAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+        alertVC.addAction(okAction)
+        presentViewController(alertVC, animated: true, completion: nil)
+        
     }
     
-    func getContacts () {
-        
-        var contacts = NSArray()
-        
-        var error: Unmanaged<CFErrorRef>? = nil
-        
-        var addressBook: ABAddressBookRef? = ABAddressBookCreateWithOptions(nil, &error)?.takeRetainedValue()
-        
-        if addressBook == nil {
-            println(error?.takeRetainedValue())
-            
-        }
-        
-        ABAddressBookRequestAccessWithCompletion(addressBook) {
-            (granted, error) in
-            if !granted {
-                
-                var alert = UIAlertController(title: "Sorry", message: "Contacts permission was not granted. Change it on phone settings.", preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-                //TODO: Handler que haga reload en la tableview
-                self.presentViewController(alert,animated: true, completion: nil)
-            }
-            
-            if let people = ABAddressBookCopyArrayOfAllPeople(addressBook)?.takeRetainedValue() as? NSArray {
-                
-            
-                var i = 0;
-                for person:ABRecordRef in people {
-                    
-                    var contactFirstName = ABRecordCopyValue(person, kABPersonFirstNameProperty).takeRetainedValue() as? NSString
-                    var contactLastName = ABRecordCopyValue(person, kABPersonLastNameProperty).takeRetainedValue() as? NSString
-                    
-                    var fullName:String = "\(contactFirstName!) \(contactLastName!)"
-                    self.tableArray.insertObject(fullName, atIndex: i)
-                }
-                
-            }
-        }
-        
-        
-    }
-        
 }
 
 /*

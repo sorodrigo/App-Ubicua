@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Services Filled-32.png"
+      "filename" : "Shutdown-32.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "Shutdown-50.png"
     },
     {
       "idiom" : "universal",
