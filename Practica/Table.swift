@@ -12,29 +12,60 @@ import UIKit
 class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
 {
     
-    var tableArray = [String]()
+    var tableDict = [String:[String]]()
     var photo:UIImage?
     var friendSet = NSMutableSet()
     var friends = [String]()
     let cellIdentifier = "cell"
     let apiHelper = APIHelper()
+    var sectionsArray: [String]!
+    var indexArray: [String]!
     
     @IBOutlet weak var flex1: UIBarButtonItem!
     @IBOutlet weak var flex2: UIBarButtonItem!
     @IBOutlet weak var sendBarButton: UIBarButtonItem!
     
-    
+    //Se cargan los contactos con cuenta desde los user defaults
     override func viewDidLoad() {
-        
+        indexArray = ["#","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
         let defaults = NSUserDefaults.standardUserDefaults()
         
         super.viewDidLoad()
         self.navigationController?.setToolbarHidden(true, animated: false)
-        self.tableArray = defaults.objectForKey("contacts") as! [String]
+        tableDict = getDictionary(defaults.objectForKey("contacts") as! [String])
+        sectionsArray = Array(tableDict.keys).sorted { $0.localizedCaseInsensitiveCompare($1) == NSComparisonResult.OrderedAscending }
+        
         tableView.delegate = self
         tableView.dataSource = self
         
+    }
+    //crea diccionario con la inicial como clave a partir del array de strings recibidos
+    func getDictionary(contacts: [String]) ->[String:[String]]{
+        var dict = [String:[String]]()
         
+        for contact in contacts{
+            var charIndex:String = (contact as NSString).substringToIndex(1)
+            charIndex = charIndex.capitalizedString
+            if contains(indexArray, charIndex){
+                if (dict[charIndex] == nil){
+                    dict[charIndex] = [contact]
+                }
+                else{
+                    dict[charIndex]?.append(contact)
+                }
+            }
+            else if dict["#"] == nil {
+                
+                dict["#"] = [contact]
+            }
+            else {
+                dict["#"]?.append(contact)
+            }
+            
+            
+            
+        }
+        return dict
     }
     
     override func didReceiveMemoryWarning() {
@@ -43,25 +74,25 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
     }
     
     // MARK: - Table view data source
-    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 1
+        return sectionsArray.count
     }
-    
+    //Se pinta una celda por cada contacto
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return tableArray.count
+        var key = sectionsArray[section]
+        return tableDict[key]!.count
     }
     
-    
+    //Se pintan las celdas
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
+        var key = sectionsArray[indexPath.section]
         var cell:customTableCell = self.tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as! customTableCell
         
-        cell.textCell.text = (tableArray[indexPath.row] as String)
+        cell.textCell.text = tableDict[key]![indexPath.row] as String
         cell.imageCell.image = UIImage(named:"bluecircle")
         
         return cell
@@ -69,15 +100,15 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         
     }
     
-    
+    //Si se selecciona una celda se cambia marca la celda seleccionada y se muestra la toolbar con un contador de contactos seleccionados
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
+        var key = sectionsArray[indexPath.section]
         var selectedCell:customTableCell = tableView.cellForRowAtIndexPath(indexPath) as! customTableCell
         selectedCell.imageCell.image = UIImage(named:"greencircle")
         
         var enviar:String
         let row = indexPath.row
-        var nombre:String = tableArray[row] as String
+        var nombre:String = tableDict[key]![indexPath.row] as String
         self.friendSet.addObject(nombre)
         
         self.navigationController?.setToolbarHidden(false, animated: true)
@@ -87,14 +118,15 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         self.sendBarButton.title = enviar
         
     }
-    
+    //Si se deselecciona una celda se revierte al estado inicial y se decrece el contador de contactos seleccionados, en caso de que no haya ninguno se esconde a toolbar
     override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        var key = sectionsArray[indexPath.section]
         var selectedCell:customTableCell = tableView.cellForRowAtIndexPath(indexPath) as! customTableCell
         selectedCell.imageCell.image = UIImage(named:"bluecircle")
         
         var enviar:String
         let row = indexPath.row
-        var nombre:String = tableArray[row] as String
+        var nombre:String = tableDict[key]![indexPath.row] as String
         self.friendSet.removeObject(nombre)
         
         if self.friendSet.count == 0
@@ -106,6 +138,24 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         self.sendBarButton.title = enviar
     }
     
+    //titulo de seccion
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        //Array(friendsDiccionario.keys)[section]
+        return sectionsArray[section]
+    }
+    
+    //indices
+    override func sectionIndexTitlesForTableView(tableView: UITableView) -> [AnyObject]! {
+        return indexArray
+    }
+    
+    //Al hacer click busca en el array de secciones existentes el indice de la tabla
+    override func tableView(tableView: UITableView, sectionForSectionIndexTitle title: String,
+        atIndex index: Int)
+        -> Int {
+            return (sectionsArray as NSArray).indexOfObject(title)
+    }
+    
     @IBAction func send(sender: AnyObject) {
         
         //self.activityIndicator.hidden = false
@@ -114,11 +164,11 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         let username:String = defaults.objectForKey("username") as! String
         self.friends = self.friendSet.allObjects as! [String]
         
-        // Create Multipart Upload request
+        // Se crea la request multipart con la foto en NSData
         var imgData : NSData = UIImagePNGRepresentation(photo)
         let httpRequest = apiHelper.uploadRequest("photos/upload", data: imgData, owner: "\(username)", friends: self.friends)
         apiHelper.sendRequest(httpRequest, completion: {(data:NSData!, error:NSError!) in
-            // Display error
+            // Se muestra el error
             if error != nil {
                 let errorMessage = self.apiHelper.getErrorMessage(error)
                 self.displayAlertMessage("Error", alertDescription: errorMessage as String)
@@ -129,7 +179,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
             var jsonerror:NSError?
             let response = NSJSONSerialization.JSONObjectWithData(data,
                 options: NSJSONReadingOptions.AllowFragments, error:&jsonerror) as! NSDictionary
-            
+            //Si se ha enviado correctamente se descarta la vista y se regresa a la camara.
             if response.valueForKey("success") as! Bool == true
             {
                 //self.activityIndicatorView.hidden = true
@@ -139,7 +189,7 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
         
         
     }
-    
+    //metodo de conveniencia para mostrar los errores
     func displayAlertMessage(header:String, alertDescription:String)
     {
         let alertVC = UIAlertController(title: header, message: alertDescription, preferredStyle: .Alert)
@@ -150,48 +200,3 @@ class Table: UITableViewController,UITableViewDataSource, UITableViewDelegate
     }
     
 }
-
-/*
-// Override to support conditional editing of the table view.
-override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-// Return NO if you do not want the specified item to be editable.
-return true
-}
-*/
-
-/*
-// Override to support editing the table view.
-override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-if editingStyle == .Delete {
-// Delete the row from the data source
-tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-} else if editingStyle == .Insert {
-// Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-}
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-// Return NO if you do not want the item to be re-orderable.
-return true
-}
-*/
-
-/*
-// MARK: - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-// Get the new view controller using [segue destinationViewController].
-// Pass the selected object to the new view controller.
-}
-*/

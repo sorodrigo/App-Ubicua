@@ -16,17 +16,17 @@ enum HTTPRequestContentType {
 
 struct APIHelper {
     
-    static let BASE_URL = "http://XXXX.YYY"
+    static let BASE_URL = "http://totemapp-sorodrigo.rhcloud.com"
     
     func buildRequest(path: String!, method: String, requestContentType: HTTPRequestContentType = HTTPRequestContentType.HTTPJsonContent, requestBoundary:String = "") -> NSMutableURLRequest {
-        // 1. Create the request URL from path
+        // 1.Se crea la request con un path
         let requestURL = NSURL(string: "\(APIHelper.BASE_URL)/\(path)")
         var request = NSMutableURLRequest(URL: requestURL!)
         
-        // Set HTTP request method and Content-Type
+        // Se establece el metodo http
         request.HTTPMethod = method
         
-        // 2. Set the correct Content-Type for the HTTP Request. This will be multipart/form-data for photo upload request and application/json for other requests in this app
+        // 2. Se elige el content type entre multipart/form-data y application/json
         switch requestContentType {
         case .HTTPJsonContent:
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -39,7 +39,7 @@ struct APIHelper {
     }
     
     func sendRequest(request: NSURLRequest, completion:(NSData!, NSError!) -> Void) -> () {
-        // Create a NSURLSession task
+        // Se crea una task NSURLSession
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (data: NSData!, response: NSURLResponse!, error: NSError!) in
             if error != nil {
@@ -65,7 +65,7 @@ struct APIHelper {
             })
         }
         
-        // start the task
+        // Se inicia la task
         task.resume()
     }
     
@@ -77,22 +77,22 @@ struct APIHelper {
         
         let bodyParams : NSMutableData = NSMutableData()
         
-        // build and format HTTP body with data
-        // prepare for multipart form uplaod
+        // Se construye y se da formato al body de la http request
+        
         
         let boundaryString = "--\(boundary)\r\n"
         let boundaryData = boundaryString.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
         bodyParams.appendData(boundaryData)
         
-        // set the parameter name
+        // Se establece el name del parametro
         let imageMeteData = "Content-Disposition: form-data; name=\"photo\"; filename=\"filename1.png\"\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         bodyParams.appendData(imageMeteData!)
         
-        // set the content type
+        //Se establece el content type
         let fileContentType = "Content-Type: image/png\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         bodyParams.appendData(fileContentType!)
         
-        // add the actual image data
+        // Se añade la data de la imagen
         if data != nil {
             bodyParams.appendData(data)
         }
@@ -100,7 +100,7 @@ struct APIHelper {
         let imageDataEnding = "\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         bodyParams.appendData(imageDataEnding!)
         
-        // pass the owner
+        // Se añade el owner
         let boundaryString2 = "--\(boundary)\r\n"
         let boundaryData2 = boundaryString.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
         
@@ -115,7 +115,7 @@ struct APIHelper {
         let closingFormData = "\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         bodyParams.appendData(closingFormData!)
         
-        // pass the friends list
+        // Se añade el array a enviar
         let boundaryString3 = "--\(boundary)\r\n"
         let boundaryData3 = boundaryString.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
         
@@ -143,7 +143,7 @@ struct APIHelper {
     func getErrorMessage(error: NSError) -> NSString {
         var errorMessage : NSString
         
-        // return correct error message
+        // devuelve el mensaje de error adecuado
         if error.domain == "HTTPHelperError" {
             let userInfo = error.userInfo as NSDictionary!
             errorMessage = userInfo.valueForKey("message") as! NSString

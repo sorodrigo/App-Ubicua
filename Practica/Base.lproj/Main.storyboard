@@ -25,7 +25,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oWS-lp-m9F">
-                                            <rect key="frame" x="272" y="2" width="40" height="40"/>
+                                            <rect key="frame" x="264" y="2" width="40" height="40"/>
                                         </imageView>
                                     </subviews>
                                 </tableViewCellContentView>
@@ -134,7 +134,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="prueba1" translatesAutoresizingMaskIntoConstraints="NO" id="ydD-ak-TR2">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ydD-ak-TR2">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Kk-Bn-Yon">
@@ -502,7 +502,6 @@
         <image name="cancel" width="50" height="50"/>
         <image name="logout" width="32" height="32"/>
         <image name="photos" width="45" height="45"/>
-        <image name="prueba1" width="640" height="1136"/>
         <image name="save" width="50" height="50"/>
         <image name="send" width="50" height="50"/>
     </resources>

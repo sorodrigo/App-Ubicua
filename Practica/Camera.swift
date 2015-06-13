@@ -41,6 +41,8 @@ class Camera: UIViewController,UIImagePickerControllerDelegate,UINavigationContr
         presentViewController(picker, animated: true, completion: nil)//4
     }
     
+    //En esta función tomaremos la foto desde la cámara, en caso de no tener acceso a ella, llamará a noCamera()
+    
     func shootPhoto() {
         if UIImagePickerController.availableCaptureModesForCameraDevice(.Rear) != nil {
             picker.allowsEditing = false
@@ -54,6 +56,8 @@ class Camera: UIViewController,UIImagePickerControllerDelegate,UINavigationContr
             }
         }
     }
+    
+    //Debido a que solo se puede acceder a la cámara con la licencia de desarrollador, se llamará a está función donde nos dará un mensaje de error y nos llevará a la fototeca
     
     func noCamera(){
         let alertVC = UIAlertController(title: "No Camera", message: "Sorry, this device has no camera", preferredStyle: .Alert)
@@ -73,10 +77,15 @@ class Camera: UIViewController,UIImagePickerControllerDelegate,UINavigationContr
         dismissViewControllerAnimated(false, completion: nil)
         performSegueWithIdentifier("photoTaken", sender: self)
     }
+    
+    //Descartar Camara
+    
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         self.doNotAlert = true
         performSegueWithIdentifier("unwindCamera", sender: self)
     }
+    
+    //Pasamos la foto tomada a la siguiente vista
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         

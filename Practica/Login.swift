@@ -37,8 +37,10 @@ class Login: UIViewController {
         
     }
     
+    // botón login lanza este método que esconde el teclado, inicia el activity indicator y lanza la petición de login al servidor.
     @IBAction func login(sender: AnyObject) {
         
+
         if self.loginUsernameText.isFirstResponder() {
             self.loginUsernameText.resignFirstResponder()
         }
@@ -55,13 +57,17 @@ class Login: UIViewController {
                 
                 makeContactsRequest()
                 
-                
-        } else {
+          
+        }
+            // en caso de que un campo este vacio se lanza un error.
+        else {
             self.displayAlertMessage("Missing Information", alertDescription: "Some of the required parameters are missing")
             self.activityIndicator.stopAnimating()
         }
     }
     
+    // Al hacer click en signup aparece una segunda pantalla que maneja el signup.
+    //// Botón signup lanza este método que esconde el teclado, inicia el activity indicator y lanza la petición de login al servidor.
     @IBAction func signup(sender: AnyObject) {
         if self.signupUsernameText.isFirstResponder() {
             self.signupUsernameText.resignFirstResponder()
@@ -91,6 +97,8 @@ class Login: UIViewController {
         
         
     }
+    
+    //método de conveniencia para lanzar una alert.
     func displayAlertMessage(header:String, alertDescription:String)
     {
         let alertVC = UIAlertController(title: header, message: alertDescription, preferredStyle: .Alert)
@@ -100,13 +108,16 @@ class Login: UIViewController {
         
     }
     
+    //método que hace la request al servidor para hacer Sign Up.
     func makeSignUpRequest(username:String, password:String, phone: String)
-    {   let httpRequest = apiHelper.buildRequest("users/signup", method: "POST")
+    {
+        //Se crea la request
+        let httpRequest = apiHelper.buildRequest("users/signup", method: "POST")
         
-        // 3. Send the request Body
+        // Se envía el body de la request
         httpRequest.HTTPBody = "{\"username\":\"\(username)\",\"password\":\"\(password)\",\"phoneNumber\":\"\(phone)\"}".dataUsingEncoding(NSUTF8StringEncoding)
         
-        // 4. Send the request
+        // Se envía la request
         apiHelper.sendRequest(httpRequest, completion: {(data:NSData!, error:NSError!) in
             if error != nil {
                 let errorMessage = self.apiHelper.getErrorMessage(error)
@@ -121,14 +132,19 @@ class Login: UIViewController {
         
     }
     
+    //método que hace la request al servidor para hacer Sign In.
     func makeSignInRequest(username:String, password:String) {
-        // Create HTTP request and set request Body
+        
+        
+        // Se crea la request
         let httpRequest = apiHelper.buildRequest("users/signin", method: "POST")
         
+        // Se crea el body de la request
         httpRequest.HTTPBody = "{\"username\":\"\(username)\",\"password\":\"\(password)\"}".dataUsingEncoding(NSUTF8StringEncoding);
         
+        //Se envía la request
         apiHelper.sendRequest(httpRequest, completion: {(data:NSData!, error:NSError!) in
-            // Display error
+            // Muestra el error
             if error != nil {
                 let errorMessage = self.apiHelper.getErrorMessage(error)
                 self.displayAlertMessage("Error", alertDescription: errorMessage as String)
@@ -146,14 +162,20 @@ class Login: UIViewController {
         
     }
     
+    //método que hace la request al servidor para a partir de un array de numeros de la agenda obtener usernames que tengan un numero en ese array
     func makeContactsRequest(){
         var error:NSError?
+        
+        //se crea la referencia a la addressbook
         self.addressbook.createAddressBook()
+        
+        //Se crea un array de strings y se llena con todos los numeros de la addressbook del sistema
         var contacts: [String] = self.addressbook.getPhoneNumbers()
-        //println(contacts.description)
-               let httpRequest = apiHelper.uploadRequest("users/contacts", data: nil, owner: "none", friends: contacts)
+        
+        //Se envía la request para enviar el array
+        let httpRequest = apiHelper.uploadRequest("users/contacts", data: nil, owner: "none", friends: contacts)
         apiHelper.sendRequest(httpRequest, completion: {(data:NSData!, error:NSError!) in
-            // Display error
+            
             if error != nil {
                 let errorMessage = self.apiHelper.getErrorMessage(error)
                 self.displayAlertMessage("Error", alertDescription: errorMessage as String)
@@ -170,24 +192,26 @@ class Login: UIViewController {
                 for contactsData in response as! [AnyObject]
                 {
                     if contactsData.valueForKey("username")! as! NSObject != NSNull(){
-                        
+                        //Se lee la response y se almacena un array de usernames
                         contactsList.append(contactsData.valueForKey("username")! as! String)
                     }
                 }
-                
+                //Se almacenan los contactos en los User Defaults
                 let defaults = NSUserDefaults.standardUserDefaults()
                 defaults.setObject(contactsList, forKey: "contacts")
             }
-            
+                //Se realiza la petición de Sign In
                 self.makeSignInRequest(self.loginUsernameText.text, password: self.loginPasswordText.text)
             })
     }
     
+    //Metodo que crea un flag en la aplicacion para que si un usuario se ha loggeado no se tenga que volver a loggear
     func updateUserLoggedInFlag(response: NSDictionary, username: String) {
         
         if response.valueForKey("success") as! Bool == true
         {
             let defaults = NSUserDefaults.standardUserDefaults()
+            //Se almacena el username y un flag loggedIn.
             defaults.setObject("loggedIn", forKey: "userLoggedIn")
             defaults.setObject(username, forKey: "username")
             defaults.synchronize()
@@ -195,23 +219,9 @@ class Login: UIViewController {
             self.performSegueWithIdentifier("login", sender: self)
         }
     }
-    
+    //Un wind para regresar a la pagina de login.
     @IBAction func unwindHome(sender: UIStoryboardSegue){
         
     }
-    
-   
-//                    var alert = UIAlertController(title: "Sorry", message: "Contacts permission was not granted. Change it on phone settings.", preferredStyle: UIAlertControllerStyle.Alert)
-//                    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-//                    //TODO: Handler que haga reload en la tableview
-//                    self.presentViewController(alert,animated: true, completion: nil)
-    
-    
-    
-            
-    
-        
-        
-    
     
 }

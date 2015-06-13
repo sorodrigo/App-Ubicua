@@ -41,7 +41,7 @@
 		5B3D305E1AFBB2F600D1D0B6 /* PhotoFriend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoFriend.swift; sourceTree = "<group>"; };
 		5B4051071AE0728F00825842 /* Table.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Table.swift; sourceTree = "<group>"; };
 		5B4383751AFAD691006BAF26 /* customTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = customTableCell.swift; sourceTree = "<group>"; };
-		5B5093E11B02576000904491 /* CollectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionHeader.swift; sourceTree = "<group>"; };
+		5B5093E11B02576000904491 /* CollectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CollectionHeader.swift; path = Practica/CollectionHeader.swift; sourceTree = "<group>"; };
 		5B5A0D2A1B1BC3CF00F4445F /* ABHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ABHelper.swift; sourceTree = "<group>"; };
 		5B8A95B11B19380400144ED4 /* APIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = APIHelper.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5B941BC21ADEC0E700926FF4 /* Practica.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Practica.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,17 +101,16 @@
 			isa = PBXGroup;
 			children = (
 				5B941BCB1ADEC0E700926FF4 /* Main.storyboard */,
+				5BEFD7D31B06A53C00373CD5 /* Login.swift */,
 				5B2048CE1AF9188B006AF11D /* Collection.swift */,
+				5BEFD7D11B0683EB00373CD5 /* DetailedPhoto.swift */,
+				5BDD757A1AE6A32100B228BF /* Camera.swift */,
+				5BDD75781AE69ED900B228BF /* Photo.swift */,
 				5B4051071AE0728F00825842 /* Table.swift */,
 				5B941BC71ADEC0E700926FF4 /* AppDelegate.swift */,
-				5BDD75781AE69ED900B228BF /* Photo.swift */,
-				5BDD757A1AE6A32100B228BF /* Camera.swift */,
-				5B3D305E1AFBB2F600D1D0B6 /* PhotoFriend.swift */,
-				5B5093E11B02576000904491 /* CollectionHeader.swift */,
-				5BEFD7D11B0683EB00373CD5 /* DetailedPhoto.swift */,
-				5BEFD7D31B06A53C00373CD5 /* Login.swift */,
 				5B8A95B11B19380400144ED4 /* APIHelper.swift */,
 				5B5A0D2A1B1BC3CF00F4445F /* ABHelper.swift */,
+				5B3D305E1AFBB2F600D1D0B6 /* PhotoFriend.swift */,
 				5B941BCE1ADEC0E700926FF4 /* Images.xcassets */,
 				5B941BD01ADEC0E700926FF4 /* LaunchScreen.xib */,
 				5B941BC51ADEC0E700926FF4 /* Supporting Files */,
@@ -147,6 +146,7 @@
 		5BB4E9C61AFA623B000477C5 /* custom */ = {
 			isa = PBXGroup;
 			children = (
+				5B5093E11B02576000904491 /* CollectionHeader.swift */,
 				5BB4E9C31AFA61AD000477C5 /* customCollectionCell.swift */,
 				5B4383751AFAD691006BAF26 /* customTableCell.swift */,
 			);

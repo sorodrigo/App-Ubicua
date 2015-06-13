@@ -21,19 +21,16 @@ class Photo: UIViewController {
         super.viewDidLoad()
         self.photoView.image = photo
         self.activityIndicator.hidden = true
-        // Do any additional setup after loading the view.
+        
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+    //Selector para parar el activity indicator despues de haberse guardado la imagen
     func image(image: UIImage, didFinishSavingWithError: NSError, contextInfo:UnsafePointer<Void>)
     {
         self.activityIndicator.stopAnimating()
     }
     
+    //Metodo que guarda la foto tomada por la camara a la fototeca de SO
     @IBAction func savePhoto(sender: AnyObject) {
         self.activityIndicator.hidden = false
         self.activityIndicator.startAnimating()
@@ -43,7 +40,7 @@ class Photo: UIViewController {
         
         
     }
-    
+    //Unwind a la pantalla de la foto tomada desde la pantalla de enviar
     @IBAction func unwindPhotoView(segue: UIStoryboardSegue){}
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -53,15 +50,4 @@ class Photo: UIViewController {
             tableVC.photo = photo
         }
     }
-    
-    /*
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    // Get the new view controller using segue.destinationViewController.
-    // Pass the selected object to the new view controller.
-    }
-    */
-    
 }
