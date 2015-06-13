@@ -16,7 +16,7 @@ enum HTTPRequestContentType {
 
 struct APIHelper {
     
-    static let BASE_URL = "http://totemapp-sorodrigo.rhcloud.com"
+    static let BASE_URL = "XXXX.YY"
     
     func buildRequest(path: String!, method: String, requestContentType: HTTPRequestContentType = HTTPRequestContentType.HTTPJsonContent, requestBoundary:String = "") -> NSMutableURLRequest {
         // 1.Se crea la request con un path
