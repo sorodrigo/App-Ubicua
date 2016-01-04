@@ -5,17 +5,17 @@ Project for Computación Ubicua course in the E.T.S.I.S.I. belonging to the U.P.
 
 Developed By: Rodrigo Solís.
 
-# Installation
+## Installation
 
 Make a file named creds.json with your Amazon S3 access information in the following format:
-{
+<pre><code>{
 "accessKeyId": "",
 "secretAccessKey": "",
 "endpoint": "",
 "region": "",
 "bucketname": "",
 "S3username": ""
-}
+}</pre></code>
 
 Configure a Node.js server using the package.json file located inside the Node Server folder and include all files contained in the same folder.
 
