@@ -1,0 +1,34 @@
+//
+   Created by Rodrigo on 23/05/15.
+
+extends ../layout
+block content
+   div#content-wrapper
+      table
+         thead
+            tr
+               th Owner
+               th Timestamp
+               th.egg Edit
+               th.egg Delete
+         tbody
+            each photo, i in photos
+               tr
+                  td #{photo.owner}
+                  td #{photo.timestamp}
+                  td
+                     a(href='/photos/#{photo.uniqueurl}').btnshow Show
+                  td.egg
+                     a(href='/photos/#{photo.uniqueurl}/edit').btnedit Edit
+                  td.egg
+                     form(action='/photos/#{photo.uniqueurl}/edit',method='post',enctype='application/x-www-form-urlencoded')
+                        input(type='hidden',value='DELETE',name='_method')
+                        button(type='submit' class='btndelete').
+                           Delete
+   script(type='text/javascript').
+      $(document).ready(function () {
+         $('.egg').hide();
+         $('.egg2').click(function () {
+            $('.egg').show();
+         });
+      });

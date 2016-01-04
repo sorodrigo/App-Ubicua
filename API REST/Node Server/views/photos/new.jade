@@ -1,0 +1,22 @@
+//
+   Created by Rodrigo on 23/05/15.
+
+extends ../layout
+block content
+   script(type='text/javascript', src='javascripts/jquery.validate.js')
+   div#content-wrapper
+      h1 Add Photo
+      div.clearfix
+      form#formAddPhoto(name="addphoto",method="post",action="/photos/upload" enctype="multipart/form-data")
+         div.addspace
+               span.red
+               p Owner:
+               input(type='text',id='owner',name='owner',placeholder='ex. James',class='textinput', autocomplete="off", required)
+               p Photo:
+               input(type='file',id='photo',name='photo', required)
+         div.addspace
+         br
+
+         div.clearfix
+         br
+         button#btnSubmit(type="submit").center Put Me In The Queue!
