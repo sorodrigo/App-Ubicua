@@ -20,3 +20,17 @@ Developed By: Rodrigo Solís.
 2. Configure a Node.js server using the package.json file located inside the Node Server folder and include all files contained in the same folder.
 
 3. Finally, set the BASE_URL to the correspondent value in the Swift project's file named APIHelper.swift.
+
+## Screenshots
+###### Login and Sign Up
+![alt tag](https://raw.githubusercontent.com/sorodrigo/App-Ubicua/master/Screenshots/Login-Screen.png)
+
+###### Pictures' Inbox
+![alt tag](https://raw.githubusercontent.com/sorodrigo/App-Ubicua/master/Screenshots/Pics-Inbox.png)
+
+###### Received Picture
+![alt tag](https://raw.githubusercontent.com/sorodrigo/App-Ubicua/master/Screenshots/Received-Pic-Detailed.png)
+
+###### Picture Taken / Send To
+![alt tag](https://raw.githubusercontent.com/sorodrigo/App-Ubicua/master/Screenshots/Pic-Taken%3ASend-To.png)
+
